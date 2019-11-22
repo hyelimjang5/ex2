@@ -1,0 +1,214 @@
+class startLogAnalysis {
+	//1. 로그파일 분석을 위한 변수
+	//스레드명을 key, 시작시간...종료시간을 변수로 만든 클래스를 value로 사용해 만든 map
+	Map<String, logData> logMap = new LinkedHashMap<String, logData>();
+	//종료시간을 구할 때 logMap을 logList에 add, logMap은 remove해 같은 스레드로 인해 logMap이 덮어씌지 않게 하기 위한 list
+	ArrayList<logData> logList = new ArrayList<>();
+	//시작시간...종료시간을 변수로 만든 클래스
+	logData ld = null;
+	//파일생성
+	BufferedWriter fw = null;
+	BufferedReader bReader = null;
+	
+	public startLogAnalysis() {
+		
+
+		try {
+			String s;
+			File file = new File("C:\\Users\\1911\\Desktop\\hyelim\\quiz\\2.로그파일분석\\galileo.log");
+			bReader = new BufferedReader(new FileReader(file));
+
+			// 더이상 읽어들일게 없을 때까지 읽어들이게 합니다.
+			while ((s = bReader.readLine()) != null) {
+				// System.out.println(s);
+
+				// 1.시작시간
+				getStartTime(s);
+
+				// 2.ESB_TRAN_ID
+				if (s.indexOf("ESB_TRAN_ID : ") != -1) {
+					getEsbId(s);
+				}
+
+				// 3.Content-Length
+				if (s.indexOf("Content-Length:") != -1) {
+					getConLen(s);
+				}
+
+				// 4. #galileo call time
+				if (s.indexOf("#galileo call time:") != -1) {
+					getCallTime(s);
+				}
+
+				// 5. running time
+				StringBuffer sb = null;
+				if (s.indexOf("]': running time") != -1) {
+					// 5-1. Before Marshalling...unMarshalling까지 구하기 위해 StringBuffer를 이용해 한줄에 append함
+					sb = getRunTimeStr(s);
+					// 5-2. running time 각 소요시간
+					getRunTime(sb.toString());
+				}
+
+				// 6. 종료시간
+				if (s.indexOf("##galileo_bean end.") != -1) {
+					getEndTime(s);
+				}
+
+			}
+
+			//파일생성
+			printData();
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (bReader != null)
+					bReader.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	// 1. 시작시간
+	private void getStartTime(String s) {
+
+		if (s.indexOf("##galileo_bean start.") != -1) {
+			ld = new logData();
+			ld.setStartTime(s.substring(1, 18));
+			logMap.put(s.substring(30, 66), ld);// map에 key(스레드명) value(시작시간)넣어줌
+
+		}
+
+	}
+
+	// 2. ESB_TRAN_ID
+	private void getEsbId(String s) {
+		
+		for (String key : logMap.keySet()) {
+			logData value = logMap.get(key);
+			if (key.equals(s.substring(30, 66))) {
+
+				value.setEsb_id(s.split("ESB_TRAN_ID : ")[1]);
+			}
+		}
+	}
+
+	// 3. Content-Length
+	private void getConLen(String s) {
+		
+		for (String key : logMap.keySet()) {
+			logData value = logMap.get(key);
+			if (key.equals(s.substring(30, 66))) {
+
+				value.setCon_len(s.split("Content-Length:")[1]);
+			}
+		}
+	}
+
+	// 4. #galileo call time 추출
+	private void getCallTime(String s) {
+
+		for (String key : logMap.keySet()) {
+			logData value = logMap.get(key);
+			if (key.equals(s.substring(30, 66))) {
+
+				value.setCallTime(s.split("#galileo call time:")[1].split(" ms")[0]);
+			}
+		}
+	}
+	
+	// 5-1. Before Marshalling...unMarshalling까지 구하기 위해 StringBuffer를 이용해 한줄에 append함
+	private StringBuffer getRunTimeStr(String s){
+		StringBuffer sb = null;
+		try{
+			sb = new StringBuffer();
+			
+				sb.append(s);
+				for (int i = 0; i < 7; i++) {
+	
+					sb.append(bReader.readLine());
+					if (sb.indexOf("##") != -1) {
+						break;
+					}
+				}
+			
+			
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		return sb;
+	}
+
+	// 5-2. running time 각 소요시간
+	private void getRunTime(String s) {
+		
+		for (String key : logMap.keySet()) {
+			logData value = logMap.get(key);
+			if (key.equals(s.substring(30, 66)) && s.contains("3. Invoking galileo")) {
+
+				value.setRunTime1(s.split("-----------------------------------------")[2].substring(0, 5));
+				value.setRunTime2(s.split("1. Before Marshalling")[1].substring(0, 5));
+				value.setRunTime3(s.split("2. Marshalling")[1].substring(0, 5));
+				value.setRunTime4(s.split("3. Invoking galileo")[1].substring(0, 5));
+			}
+		}
+	}
+
+	// 6. 종료시간
+	private void getEndTime(String s) {
+
+		for (String key : logMap.keySet()) {
+			logData value = logMap.get(key);
+			if (key.equals(s.substring(30, 66))) {
+
+				value.setEndTime(s.substring(1, 18));
+
+				//온전하지 않은 데이터를 제거하기 위한 작업
+				if(value.startTime!=null&&value.esb_id!=null&&value.con_len!=null
+						&&value.callTime!=null&&value.runTime1!=null&&value.runTime2!=null
+						&&value.runTime3!=null&&value.runTime4!=null&&value.endTime!=null){
+					logList.add(value);
+					
+					logMap.remove(key);
+					break;
+				}
+			}
+		}
+		
+	}
+
+	//파일생성
+	private void printData() {
+
+		try{
+			// 파일생성
+			 File f = new File("C:\\Users\\1911\\Desktop\\hyelim\\quiz\\ex2_result\\logAnalysis1.txt");
+			 fw = new BufferedWriter(new FileWriter(f, false));
+			 
+			 //종료시간을 구할때 list가 종료시간으로 정렬되어있기 때문에 시작시간 순으로 정렬하기 위한 메소드
+			Collections.sort(logList);
+			
+			for(logData s:logList){
+
+				fw.write(s.startTime + " , " + s.endTime + " , " + s.esb_id + " , " + s.con_len + " , "
+							+ s.callTime + " , " + s.runTime1 + " , " + s.runTime2 + " , " + s.runTime3 + " , "
+							+ s.runTime4 );
+				fw.write("\r\n");
+				fw.flush();
+			}
+		}catch(Exception e){
+			e.printStackTrace();
+		} finally {
+			try {
+				if (fw != null)
+					fw.close();
+				System.out.println("File saved!");
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+
+	}
+}
