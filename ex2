@@ -1,0 +1,15 @@
+public class ex2 {
+	public static void main(String[] args) {
+		long start = System.currentTimeMillis();
+
+		new startLogAnalysis();//1. 로그파일 분석 클래스
+		new startLogAnalysis2();//2. 분별파일 분석 클래스
+
+		long end = System.currentTimeMillis();
+
+		System.out.println("실행 시간 : " + (end - start) +" ms");
+		System.out.println(
+				"Used Memory : " + (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1000);
+
+	}
+}
