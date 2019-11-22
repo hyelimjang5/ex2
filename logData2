@@ -1,0 +1,93 @@
+//2.분별 추출데이터
+class logData2 {
+	String time;//분별시간
+	int cnt;//처리건수
+	long avgTime;//평균소요시간
+	long minTime;//최소시간
+	long maxTime;//최대시간
+	int avgSize;//평균사이즈
+	int minSize;//최소사이즈
+	int maxSize;//최대사이즈
+	
+	public logData2(){}
+
+	public logData2(String time, int cnt, long avgTime, long minTime, long maxTime, int avgSize, int minSize,
+			int maxSize) {
+		super();
+		this.time = time;
+		this.cnt = cnt;
+		this.avgTime = avgTime;
+		this.minTime = minTime;
+		this.maxTime = maxTime;
+		this.avgSize = avgSize;
+		this.minSize = minSize;
+		this.maxSize = maxSize;
+	}
+
+	public String getTime() {
+		return time;
+	}
+
+	public void setTime(String time) {
+		this.time = time;
+	}
+
+	public int getCnt() {
+		return cnt;
+	}
+
+	public void setCnt(int cnt) {
+		this.cnt = cnt;
+	}
+
+	public long getAvgTime() {
+		return avgTime;
+	}
+
+	public void setAvgTime(long avgTime) {
+		this.avgTime = avgTime;
+	}
+
+	public long getMinTime() {
+		return minTime;
+	}
+
+	public void setMinTime(long minTime) {
+		this.minTime = minTime;
+	}
+
+	public long getMaxTime() {
+		return maxTime;
+	}
+
+	public void setMaxTime(long maxTime) {
+		this.maxTime = maxTime;
+	}
+
+	public int getAvgSize() {
+		return avgSize;
+	}
+
+	public void setAvgSize(int avgSize) {
+		this.avgSize = avgSize;
+	}
+
+	public int getMinSize() {
+		return minSize;
+	}
+
+	public void setMinSize(int minSize) {
+		this.minSize = minSize;
+	}
+
+	public int getMaxSize() {
+		return maxSize;
+	}
+
+	public void setMaxSize(int maxSize) {
+		this.maxSize = maxSize;
+	}
+
+	
+	
+}
