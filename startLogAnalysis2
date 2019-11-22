@@ -1,0 +1,247 @@
+class startLogAnalysis2{
+	//2. 분별파일 분석을 위한 변수
+	//분별을 key, 분별..시간,사이즈를 변수로 만든 클래스를 value로 사용해 만든 map
+	Map<String, logData2> logMap2 = new LinkedHashMap<String, logData2>();
+	//파일에 있는 분만 추출한 list
+	ArrayList<String> minArr = new ArrayList<>();
+	//분별..시간,사이즈를 변수로 만든 클래스
+	logData2 ld2 = null;
+	//파일생성
+	BufferedWriter fw = null;
+	
+	//2.분별파일분석
+	public startLogAnalysis2() {
+		BufferedReader bReader = null;
+		BufferedReader bReader2 = null;
+		try {
+			String s;
+			File file = new File("C:\\Users\\1911\\Desktop\\hyelim\\quiz\\test2_result\\logAnalysis2.txt");
+			bReader = new BufferedReader(new FileReader(file));
+			bReader2 = new BufferedReader(new FileReader(file));
+			// 더이상 읽어들일게 없을 때까지 읽어들이게 합니다.
+			//객체생성먼저
+			while ((s = bReader.readLine()) != null) {
+				 //System.out.println(s);
+				//2-1. 분별로 minArr에 담기
+				getMinArr(s);
+				
+				//2-2. 분별시간검색
+				getTime(s);
+			}
+			//다음계산-객채생성과 동시에 계산을 하면 초기화 되기 때문에..
+			while ((s = bReader2.readLine()) != null) {
+				//2-3. 분별카운트
+				getCount(s);
+				
+				//2-4. 평균소요시간(일단더해놓고 나중에 나누기)
+				getAvgTime(s);
+				
+				//2-5. 최소시간
+				getMinTime(s);
+				
+				//2-6. 최대시간
+				getMaxTime(s);
+				
+				//2-7. 평균사이즈
+				getAvgSize(s);
+				
+				//2-8. 최소사이즈
+				getMinSize(s);
+				
+				//2-9. 최대사이즈
+				getMaxSize(s);
+			}
+			//2-10.출력
+			printData2();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (bReader != null)
+					bReader.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	//2-1. 분별로 minArr에 담기
+	private void getMinArr(String s){
+
+		if(!minArr.contains(s.substring(0, 14))){
+			//System.out.println(s.substring(12,14));//분단위가 나오는 인덱스
+			minArr.add(s.substring(0, 14));
+		}
+
+	}
+	
+	//2-2.분별시간검색
+	private void getTime(String s){
+		//System.out.println(s.substring(12,14));
+		
+		for(int i=0;i<minArr.size();i++){
+			ld2 = new logData2();
+			ld2.setTime(minArr.get(i));
+			//map에 저장
+			logMap2.put(minArr.get(i), ld2);
+			
+		}
+	
+	}
+	
+	//2-3. 분별카운트
+	private void getCount(String s){
+		//System.out.println(s.substring(0, 14));
+		for(String key : logMap2.keySet()){
+			if(s.substring(0,14).equals(key)){
+				//System.out.println(s.substring(0,14));
+				
+				logData2 value = logMap2.get(key);
+
+				value.setCnt(value.getCnt()+1);
+				
+			}
+		}
+	}
+	
+	//2-4. 평균소요시간(일단더해놓고 나중에 나누기)
+	private void getAvgTime(String s){
+
+		try{
+			SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
+			Date d1 = sdf.parse(s.substring(9,17));//시작
+			Date d2 = sdf.parse(s.substring(29,37));//끝
+			long diff = d2.getTime() - d1.getTime();
+			
+			for(String key : logMap2.keySet()){
+				logData2 value = logMap2.get(key);
+				if(s.substring(0,14).equals(key)){
+					value.setAvgTime(value.getAvgTime()+diff);
+				}
+			}
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+	
+	}
+	
+	//2-5. 최소시간
+	private void getMinTime(String s){
+
+		try{
+			SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
+			Date d1 = sdf.parse(s.substring(9,17));//시작
+			Date d2 = sdf.parse(s.substring(29,37));//끝
+			long diff = d2.getTime() - d1.getTime();
+			
+			for(String key : logMap2.keySet()){
+				logData2 value = logMap2.get(key);
+				if(s.substring(0,14).equals(key)&&value.getMinTime()>diff){
+					value.setMinTime(diff);
+				}
+			}
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+	
+	}
+	
+	//2-6. 최대시간
+	private void getMaxTime(String s){
+
+		try{
+			SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
+			Date d1 = sdf.parse(s.substring(9,17));//시작
+			Date d2 = sdf.parse(s.substring(29,37));//끝
+			long diff = d2.getTime() - d1.getTime();
+			
+			for(String key : logMap2.keySet()){
+				logData2 value = logMap2.get(key);
+				if(s.substring(0,14).equals(key)&&value.getMaxTime()<diff){
+					value.setMaxTime(diff);
+				}
+			}
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+	
+	}
+	
+	//2-7. 평균사이즈
+	private void getAvgSize(String s){
+		//System.out.println(s.split(" , ")[3]);
+		
+		for(String key : logMap2.keySet()){
+			logData2 value = logMap2.get(key);
+			if(s.substring(0,14).equals(key)){
+				value.setAvgSize(value.getAvgSize()+Integer.parseInt(s.split(" , ")[3]));
+			}
+		}
+
+	}
+	
+	//2-8. 최소사이즈
+	private void getMinSize(String s){
+		//System.out.println(s.split(" , ")[3]);
+		
+		for(String key : logMap2.keySet()){
+			logData2 value = logMap2.get(key);
+			if(s.substring(0,14).equals(key)&&
+					(value.getMinSize()>Integer.parseInt(s.split(" , ")[3])||value.getMinSize()==0)){
+				value.setMinSize(Integer.parseInt(s.split(" , ")[3]));
+			}
+		}
+
+	}
+	
+	//2-9. 최대사이즈
+	private void getMaxSize(String s){
+		//System.out.println(s.split(" , ")[3]);
+		
+		for(String key : logMap2.keySet()){
+			logData2 value = logMap2.get(key);
+			if(s.substring(0,14).equals(key)&&
+					(value.getMaxSize()<Integer.parseInt(s.split(" , ")[3]))){
+				value.setMaxSize(Integer.parseInt(s.split(" , ")[3]));
+			}
+		}
+
+	}
+	
+	//2-10. 파일생성
+	private void printData2(){
+	
+		try{
+			// 파일생성
+			 File f = new File("C:\\\\Users\\1911\\Desktop\\hyelim\\quiz\\ex2_result\\logAnalysis2.txt");
+			 fw = new BufferedWriter(new FileWriter(f, false));
+			
+			for(String key : logMap2.keySet()){
+				logData2 value = logMap2.get(key);
+				
+				//평균시간계산
+				value.setAvgTime(value.avgTime/value.cnt);
+				
+				//평균사이즈계산
+				value.setAvgSize(value.avgSize/value.cnt);
+				
+				fw.write(value.time+" , "+value.cnt+" , "+value.avgTime+" , "+value.minTime+" , "+value.maxTime+" , "
+						+value.avgSize+" , "+value.minSize+" , "+value.maxSize);
+				fw.write("\r\n");
+				fw.flush();
+	
+			}
+		}catch(Exception e){
+			e.printStackTrace();
+		} finally {
+			try {
+				if (fw != null)
+					fw.close();
+				System.out.println("File saved!");
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+
+	}
+}
