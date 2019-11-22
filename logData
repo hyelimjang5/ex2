@@ -1,0 +1,124 @@
+//1.로그 추출데이터 
+class logData implements Comparable<logData> {
+	String startTime;// 시작시간 ##galileo_bean start.
+	String esb_id;// ESB_TRAN_ID
+	String con_len;// Content-Length
+	String callTime;// #galileo call time
+	String runTime1;// running time
+	String runTime2;
+	String runTime3;
+	String runTime4;
+	String endTime;// 종료시간 ##galileo_bean end.
+
+	public logData() {
+	}
+
+	public logData(String startTime, String esb_id, String con_len, String callTime, String runTime1, String runTime2,
+			String runTime3, String runTime4, String endTime) {
+		super();
+		this.startTime = startTime;
+		this.esb_id = esb_id;
+		this.con_len = con_len;
+		this.callTime = callTime;
+		this.runTime1 = runTime1;
+		this.runTime2 = runTime2;
+		this.runTime3 = runTime3;
+		this.runTime4 = runTime4;
+		this.endTime = endTime;
+	}
+
+	public String getStartTime() {
+		return startTime;
+	}
+
+	public void setStartTime(String startTime) {
+		this.startTime = startTime;
+	}
+
+	public String getEsb_id() {
+		return esb_id;
+	}
+
+	public void setEsb_id(String esb_id) {
+		this.esb_id = esb_id;
+	}
+
+	public String getCon_len() {
+		return con_len;
+	}
+
+	public void setCon_len(String con_len) {
+		this.con_len = con_len;
+	}
+
+	public String getCallTime() {
+		return callTime;
+	}
+
+	public void setCallTime(String callTime) {
+		this.callTime = callTime;
+	}
+
+	public String getRunTime1() {
+		return runTime1;
+	}
+
+	public void setRunTime1(String runTime1) {
+		this.runTime1 = runTime1;
+	}
+
+	public String getRunTime2() {
+		return runTime2;
+	}
+
+	public void setRunTime2(String runTime2) {
+		this.runTime2 = runTime2;
+	}
+
+	public String getRunTime3() {
+		return runTime3;
+	}
+
+	public void setRunTime3(String runTime3) {
+		this.runTime3 = runTime3;
+	}
+
+	public String getRunTime4() {
+		return runTime4;
+	}
+
+	public void setRunTime4(String runTime4) {
+		this.runTime4 = runTime4;
+	}
+
+	public String getEndTime() {
+		return endTime;
+	}
+
+	public void setEndTime(String endTime) {
+		this.endTime = endTime;
+	}
+
+	//시간을 비교해 시작시간 순서대로 정렬하기 위한 메소드
+	@Override
+	public int compareTo(logData ld) {
+		SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
+		Date d1 = null;
+		Date d2 = null;
+		try{
+			d1 = sdf.parse(this.startTime.substring(9,17));//시작
+			d2 = sdf.parse(ld.getStartTime().substring(9,17));//끝
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		if (d1.getTime() < d2.getTime()) {
+            return -1;
+        } else if (d1.getTime() > d2.getTime()) {
+            return 1;
+        }
+
+		return 0;
+		
+	}
+
+}
