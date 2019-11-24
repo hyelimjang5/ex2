@@ -1,5 +1,6 @@
+//2. 분별파일 분석 클래스
 class startLogAnalysis2{
-	//2. 분별파일 분석을 위한 변수
+	//분별파일 분석을 위한 변수
 	//분별을 key, 분별..시간,사이즈를 변수로 만든 클래스를 value로 사용해 만든 map
 	Map<String, logData2> logMap2 = new LinkedHashMap<String, logData2>();
 	//파일에 있는 분만 추출한 list
@@ -8,14 +9,18 @@ class startLogAnalysis2{
 	logData2 ld2 = null;
 	//파일생성
 	BufferedWriter fw = null;
+
+	public startLogAnalysis2() {//생성자
+		startAnalysis2();
+	}
 	
-	//2.분별파일분석
-	public startLogAnalysis2() {
+	//분별파일분석
+	private void startAnalysis2() {
 		BufferedReader bReader = null;
 		BufferedReader bReader2 = null;
 		try {
 			String s;
-			File file = new File("C:\\Users\\1911\\Desktop\\hyelim\\quiz\\test2_result\\logAnalysis2.txt");
+			File file = new File("C:\\Users\\vkfks\\Downloads\\과제\\ex2_result\\logAnalysis1.txt");
 			bReader = new BufferedReader(new FileReader(file));
 			bReader2 = new BufferedReader(new FileReader(file));
 			// 더이상 읽어들일게 없을 때까지 읽어들이게 합니다.
@@ -66,6 +71,7 @@ class startLogAnalysis2{
 	}
 	
 	//2-1. 분별로 minArr에 담기
+	//데이터 중 존재하는 분을 list로 만들어 그 수만큼 map을 만들기 위함
 	private void getMinArr(String s){
 
 		if(!minArr.contains(s.substring(0, 14))){
@@ -76,9 +82,8 @@ class startLogAnalysis2{
 	}
 	
 	//2-2.분별시간검색
+	//존재하는 분만 데이터로 추출한 list를 map에 키와 값으로 저장
 	private void getTime(String s){
-		//System.out.println(s.substring(12,14));
-		
 		for(int i=0;i<minArr.size();i++){
 			ld2 = new logData2();
 			ld2.setTime(minArr.get(i));
@@ -90,14 +95,12 @@ class startLogAnalysis2{
 	}
 	
 	//2-3. 분별카운트
+	//map에 있는 키와 값이 같을 때 그 변수에 1을 더해 갯수를 셀 수 있음
 	private void getCount(String s){
-		//System.out.println(s.substring(0, 14));
 		for(String key : logMap2.keySet()){
 			if(s.substring(0,14).equals(key)){
-				//System.out.println(s.substring(0,14));
 				
 				logData2 value = logMap2.get(key);
-
 				value.setCnt(value.getCnt()+1);
 				
 			}
@@ -105,6 +108,7 @@ class startLogAnalysis2{
 	}
 	
 	//2-4. 평균소요시간(일단더해놓고 나중에 나누기)
+	//SimpleDateFormat으로 데이터에 맞게 포맷을 해준 후 시간계산을 해 그 값을 계속해서 더해 파일생성 전 데이터 갯수로 나누기 위함
 	private void getAvgTime(String s){
 
 		try{
@@ -126,6 +130,7 @@ class startLogAnalysis2{
 	}
 	
 	//2-5. 최소시간
+	//SimpleDateFormat으로 데이터에 맞게 포맷을 해준 후 시간계산을 해 그 값이 가장 작은 값을 찾아내는 작업
 	private void getMinTime(String s){
 
 		try{
@@ -147,6 +152,7 @@ class startLogAnalysis2{
 	}
 	
 	//2-6. 최대시간
+	//SimpleDateFormat으로 데이터에 맞게 포맷을 해준 후 시간계산을 해 그 값이 가장 큰 값을 찾아내는 작업
 	private void getMaxTime(String s){
 
 		try{
@@ -168,6 +174,7 @@ class startLogAnalysis2{
 	}
 	
 	//2-7. 평균사이즈
+	//map에 있는 키와 같을 때 평균사이즈변수에 계속해서 사이즈를 더해 파일생성전 데이터갯수로 나누어 평균값을 구하기 위함
 	private void getAvgSize(String s){
 		//System.out.println(s.split(" , ")[3]);
 		
@@ -181,6 +188,7 @@ class startLogAnalysis2{
 	}
 	
 	//2-8. 최소사이즈
+	//map에 있는 키와 같을 때 최소사이즈변수의 값과 계속해서 비교해 더 작은 사이즈를 찾아나감
 	private void getMinSize(String s){
 		//System.out.println(s.split(" , ")[3]);
 		
@@ -195,6 +203,7 @@ class startLogAnalysis2{
 	}
 	
 	//2-9. 최대사이즈
+	//map에 있는 키와 같을 때 최대사이즈변수의 값과 계속해서 비교해 더 큰 사이즈를 찾아나감
 	private void getMaxSize(String s){
 		//System.out.println(s.split(" , ")[3]);
 		
@@ -213,20 +222,20 @@ class startLogAnalysis2{
 	
 		try{
 			// 파일생성
-			 File f = new File("C:\\\\Users\\1911\\Desktop\\hyelim\\quiz\\ex2_result\\logAnalysis2.txt");
+			 File f = new File("C:\\Users\\vkfks\\Downloads\\과제\\ex2_result\\logAnalysis2.txt");
 			 fw = new BufferedWriter(new FileWriter(f, false));
 			
 			for(String key : logMap2.keySet()){
 				logData2 value = logMap2.get(key);
 				
 				//평균시간계산
-				value.setAvgTime(value.avgTime/value.cnt);
+				value.setAvgTime(value.getAvgTime()/value.getCnt());
 				
 				//평균사이즈계산
-				value.setAvgSize(value.avgSize/value.cnt);
+				value.setAvgSize(value.getAvgSize()/value.getCnt());
 				
-				fw.write(value.time+" , "+value.cnt+" , "+value.avgTime+" , "+value.minTime+" , "+value.maxTime+" , "
-						+value.avgSize+" , "+value.minSize+" , "+value.maxSize);
+				fw.write(value.getTime()+" , "+value.getCnt()+" , "+value.getAvgTime()+" , "+value.getMinTime()+" , "+value.getMaxTime()+" , "
+						+value.getAvgTime()+" , "+value.getMinSize()+" , "+value.getMaxSize());
 				fw.write("\r\n");
 				fw.flush();
 	
