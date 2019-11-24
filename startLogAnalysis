@@ -1,3 +1,4 @@
+//1. 로그파일 분석 클래스
 class startLogAnalysis {
 	//1. 로그파일 분석을 위한 변수
 	//스레드명을 key, 시작시간...종료시간을 변수로 만든 클래스를 value로 사용해 만든 map
@@ -10,12 +11,15 @@ class startLogAnalysis {
 	BufferedWriter fw = null;
 	BufferedReader bReader = null;
 	
-	public startLogAnalysis() {
-		
-
+	public startLogAnalysis() {//생성자
+		startAnalysis();
+	}
+	
+	//1.로그파일분석
+	private void startAnalysis() {
 		try {
 			String s;
-			File file = new File("C:\\Users\\1911\\Desktop\\hyelim\\quiz\\2.로그파일분석\\galileo.log");
+			File file = new File("C:\\Users\\vkfks\\Downloads\\과제\\galileo.log");
 			bReader = new BufferedReader(new FileReader(file));
 
 			// 더이상 읽어들일게 없을 때까지 읽어들이게 합니다.
@@ -166,9 +170,9 @@ class startLogAnalysis {
 				value.setEndTime(s.substring(1, 18));
 
 				//온전하지 않은 데이터를 제거하기 위한 작업
-				if(value.startTime!=null&&value.esb_id!=null&&value.con_len!=null
-						&&value.callTime!=null&&value.runTime1!=null&&value.runTime2!=null
-						&&value.runTime3!=null&&value.runTime4!=null&&value.endTime!=null){
+				if(value.getStartTime()!=null&&value.getEsb_id()!=null&&value.getCon_len()!=null
+						&&value.getCallTime()!=null&&value.getRunTime1()!=null&&value.getRunTime2()!=null
+						&&value.getRunTime3()!=null&&value.getRunTime4()!=null&&value.getEndTime()!=null){
 					logList.add(value);
 					
 					logMap.remove(key);
@@ -184,7 +188,7 @@ class startLogAnalysis {
 
 		try{
 			// 파일생성
-			 File f = new File("C:\\Users\\1911\\Desktop\\hyelim\\quiz\\ex2_result\\logAnalysis1.txt");
+			 File f = new File("C:\\Users\\vkfks\\Downloads\\과제\\ex2_result\\logAnalysis1.txt");
 			 fw = new BufferedWriter(new FileWriter(f, false));
 			 
 			 //종료시간을 구할때 list가 종료시간으로 정렬되어있기 때문에 시작시간 순으로 정렬하기 위한 메소드
@@ -192,9 +196,9 @@ class startLogAnalysis {
 			
 			for(logData s:logList){
 
-				fw.write(s.startTime + " , " + s.endTime + " , " + s.esb_id + " , " + s.con_len + " , "
-							+ s.callTime + " , " + s.runTime1 + " , " + s.runTime2 + " , " + s.runTime3 + " , "
-							+ s.runTime4 );
+				fw.write(s.getStartTime() + " , " + s.getEndTime() + " , " + s.getEsb_id() + " , " + s.getCon_len() + " , "
+							+ s.getCallTime() + " , " + s.getRunTime1() + " , " + s.getRunTime2() + " , " + s.getRunTime3() + " , "
+							+ s.getRunTime4() );
 				fw.write("\r\n");
 				fw.flush();
 			}
